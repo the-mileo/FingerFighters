@@ -8,7 +8,8 @@ str_direita:  .asciiz "\n    Mao direita: "
 str5:         .asciiz "        Mao que quer usar [Esquerda 0] [Direita 1]: "
 str6:         .asciiz "        Jogador alvo [0, n - 1]: "
 str7:         .asciiz "        Mao alvo [Esquerda 0] [Direita 1]: "
-msgDebug:     .asciiz "\n DEBUG"
+strWin:	      .asciiz "Parabens, voce venceu!\nJogador vencedor: "
+strDebug:     .asciiz "\n DEBUG"
 
     # Cores de identificação no centro da palma de cada jogador
     cores_jogadores:
@@ -110,16 +111,11 @@ mainloop:
     jal checkIfSkip
     
     addi $s0, $s0, -1
-    #bge $s5, $s0, winner
+    bge $s5, $s0, winner
     addi $s0, $s0, 1
     
     bgt $v0, $zero, mainloop #jogador morto, passa pro proximo
     move $s5, $zero #jogador vivo, logo reseta skips
-    
-    	#DEBUG
-    la   $a0, msgDebug
-    li   $v0, 4
-    syscall
 
     # ----------------- Imprimir turno atual ------------------
     la   $a0, str3
@@ -585,6 +581,19 @@ checkIfSkip:
     lw   $ra, 0($sp)
     addi $sp, $sp, 20
     jr   $ra
+
+winner:
+
+    la   $a0, strWin
+    li   $v0, 4
+    syscall
+    
+    li $v0, 1
+    move $a0, $s4
+    syscall
+    
+    li $v0, 10
+    syscall
     
     #DEBUG
     #la   $a0, msgDebug
